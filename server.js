@@ -1,9 +1,13 @@
 // Use Insomnia to test API posting
+// Success with API GET for all notes
+
+
 // Link post and get requests to buttons
 // Deploy server to Heroku
 
 const express = require('express');
 const path = require('path');
+const db = require('./db/db.json')
 
 const PORT = 3001;
 
@@ -18,19 +22,19 @@ app.get('/notes', (req, res) =>
 );
 
 // GET request for notes
-app.get('api/notes', (req, res) => {
+app.get('/api/notes', (req, res) => {
     console.info(`GET /api/notes`);
-    res.status(200).json(notes);
+    res.status(200).json(db);
 });
 
 // GET a single note
-app.get('api/notes/:note_id', (req, res) => {
-    if (req.params.note_id){
+app.get('/api/notes/:title', (req, res) => {
+    if (req.params.title){
         console.info(`${req.method} request received to get a single note`);
-        const noteId = req.params.note_id;
+        const title = req.params.title;
         for (let i =0; i < notes.length; i++){
             const currentNote = notes[i];
-            if (currentNote.note_id === noteId){
+            if (currentNote.title === title){
                 res.json(currentNote);
                 return;
             }
