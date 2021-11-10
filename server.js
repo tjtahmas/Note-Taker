@@ -25,6 +25,16 @@ app.get('/notes', (req, res) =>
     res.sendFile(path.join(__dirname, '/public/notes.html'))
 );
 
+app.get('/assets/js/index.js', function (req, res) {
+    res.sendFile(path.join(__dirname, '/public/assets/js/index.js'))
+    console.log('accessed JS script successfully')
+});
+
+app.get('/assets/css/styles.css', function (req,res){
+    res.sendFile(path.join(__dirname, '/public/assets/css/styles.css'))
+    console.log('accessed CSS stylesheet successfully')
+});    
+
 // GET request for notes
 app.get('/api/notes', (req, res) => {
     console.info(`GET /api/notes`);
