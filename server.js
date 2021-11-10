@@ -99,6 +99,8 @@ app.post('/api/notes', (req, res) => {
     }
 });
 
+app.set('port', process.env.PORT || 25433);
+
 app.listen(PORT, () =>
     console.log(`App listening at http://localhost:${PORT} 🚀`)
 );
