@@ -10,7 +10,8 @@ const fs = require('fs');
 const path = require('path');
 const db = require('./db/db.json')
 
-const PORT = 25433;
+const PORT = process.env.PORT || 25433;
+
 
 const app = express();
 
@@ -99,7 +100,7 @@ app.post('/api/notes', (req, res) => {
     }
 });
 
-app.set('port', process.env.PORT || 25433);
+//app.set('port', process.env.PORT || 25433);
 
 app.listen(PORT, () =>
     console.log(`App listening at http://localhost:${PORT} 🚀`)
