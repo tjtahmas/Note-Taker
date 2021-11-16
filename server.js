@@ -9,6 +9,7 @@ const express = require('express');
 const fs = require('fs');
 const path = require('path');
 const db = require('./db/db.json')
+const uniqid = require('uniqid'); 
 
 const PORT = process.env.PORT || 25433;
 
@@ -39,26 +40,32 @@ app.get('/assets/css/styles.css', function (req,res){
 // GET request for notes
 app.get('/api/notes', (req, res) => {
     console.info(`GET /api/notes`);
-    res.status(200).json(db);
+    // res.status(200).json(db);
+    fs.readFile('./db/db.json', 'utf8', (err, data) => {
+        if (err){
+            console.log(err);
+        }
+        res.send(data);
+    })
 });
 
-// GET a single note
-app.get('/api/notes/:title', (req, res) => {
-    if (req.params.title){
-        console.info(`${req.method} request received to get a single note`);
-        const title = req.params.title;
-        for (let i =0; i < notes.length; i++){
-            const currentNote = notes[i];
-            if (currentNote.title === title){
-                res.json(currentNote);
-                return;
-            }
-        }
-        res.status(404).send('Note not found');
-    } else {
-        res.status(400).send('Note ID not provided');
-    }
-});
+// // GET a single note
+// app.get('/api/notes/:title', (req, res) => {
+//     if (req.params.title){
+//         console.info(`${req.method} request received to get a single note`);
+//         const title = req.params.title;
+//         for (let i =0; i < notes.length; i++){
+//             const currentNote = notes[i];
+//             if (currentNote.title === title){
+//                 res.json(currentNote);
+//                 return;
+//             }
+//         }
+//         res.status(404).send('Note not found');
+//     } else {
+//         res.status(400).send('Note ID not provided');
+//     }
+// });
 
 // POST request to add a note
 app.post('/api/notes', (req, res) => {
@@ -72,9 +79,10 @@ app.post('/api/notes', (req, res) => {
 
         const newNote = {
             title,
-            text
+            text,
+            id: uniqid(),
         };
-
+        console.log(newNote);
         fs.readFile('./db/db.json', 'utf8', (err, data) => {
             if (err) {
                 console.error(err);
@@ -87,18 +95,48 @@ app.post('/api/notes', (req, res) => {
                 fs.writeFile(
                     './db/db.json',
                     JSON.stringify(parsedNotes, null , 4),
-                    (writeErr) =>
+                    (writeErr) => {
                     writeErr
                     ? console.error(writeErr)
-                    : console.info('Succesfully updated notes')
+                    : res.json(newNote)
+                    // if (writeErr){
+                    //     console.log(err)
+                    // }
+                    // db.push(newNote);
+                    // res.json(newNote);
+                }
                 );
             }
         });
-        res.status(201).json(res);
     } else {
         res.status(500).json('Error in posting note');
     }
 });
+
+app.delete('/api/notes/:id', (req,res) => {
+    console.log(req.params.id);
+    fs.readFile('./db/db.json', 'utf8', (err, data) => {
+        if (err){
+            throw err;
+        }
+        const parsedNotes = JSON.parse(data);
+        var index;
+        for (i=0; i < parsedNotes.length; i++){
+            if (data[i].id === req.params.id){
+                index = i;
+            }
+        }
+        parsedNotes.splice(index, 1);
+        fs.writeFile(
+            './db/db.json',
+            JSON.stringify(parsedNotes, null , 4),
+            (writeErr) => {
+            writeErr
+            ? console.error(writeErr)
+            : res.json('Successfully Deleted!');
+        });
+    });
+})
 
 //app.set('port', process.env.PORT || 25433);
 
